@@ -1,6 +1,8 @@
-import { addPost } from 'pages/blog/blog.reducer'
+import { useEffect } from 'react'
+import { addPost, cancelEditingPost, finishEditingPost } from 'pages/blog/blog.reducer'
 import { Fragment, useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from 'store'
 
 import { Post } from 'types/blog.type'
 
@@ -15,17 +17,30 @@ const initialState: Post = {
 
 export default function CreatePost() {
   const [formData, setFormData] = useState<Post>(initialState)
+  const editingPost = useSelector((state: RootState) => state.blog.editingPost)
   const dispatch = useDispatch()
+
+  useEffect(() => {
+    setFormData(editingPost || initialState)
+  }, [editingPost])
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    const formDataWithId = { ...formData, id: new Date().toISOString() }
-    dispatch(addPost(formDataWithId))
+    if (editingPost) {
+      dispatch(finishEditingPost(formData))
+    } else {
+      const formDataWithId = { ...formData }
+      dispatch(addPost(formDataWithId))
+    }
     setFormData(initialState)
   }
 
+  const handleCancelEditingPost = () => {
+    dispatch(cancelEditingPost())
+  }
+
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} onReset={handleCancelEditingPost}>
       <div className='mb-6'>
         <label htmlFor='title' className='mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300'>
           Title
