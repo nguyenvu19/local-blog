@@ -1,4 +1,4 @@
-import { createAction, createReducer, nanoid } from '@reduxjs/toolkit'
+import { createAction, createReducer, current, nanoid } from '@reduxjs/toolkit'
 import { initialPostList } from 'constants/blog'
 import { Post } from 'types/blog.type'
 
@@ -64,6 +64,12 @@ const blogReducer = createReducer(initialState, (builder) => {
       })
       state.editingPost = null
     })
+    .addMatcher(
+      (action) => action.type.includes('cancel'),
+      (state, action) => {
+        console.log(current(state))
+      }
+    )
 })
 
 export default blogReducer
