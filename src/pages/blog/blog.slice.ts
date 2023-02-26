@@ -54,6 +54,18 @@ const blogSlice = createSlice({
         }
       })
     }
+  },
+  extraReducers(builder) {
+    builder
+      .addMatcher(
+        (action) => action.type.includes('cancel'),
+        (state, action) => {
+          console.log(state)
+        }
+      )
+      .addDefaultCase((state, action) => {
+        console.log(`state ${state}`)
+      })
   }
 })
 
